@@ -124,7 +124,7 @@ flux bootstrap github \
 ```--private``` make the repo private (if you remove this the repo will be created as public)
 
 
-There are other options for this tool like linking it with an Enterprise Github account, or other git rpoviders check (flux bootstrap)[https://fluxcd.io/docs/installation/#bootstrap]
+There are other options for this tool like linking it with an Enterprise Github account, or other git rpoviders check [flux bootstrap](https://fluxcd.io/docs/installation/#bootstrap)
 
 Remove the reference to the currect repo and connect it to yours:
 
@@ -240,7 +240,7 @@ spec:
 
 note: As a convention and since the sources folder can hold several types of repositories and/or registries I personally add the type of source to the file name, in this case ```-helm```  to represent a helm repo.
 
-So ```infrastructure/sources/ingress-nginx-helm.yaml``` describes where the repo is located, you can add and reference secrets to the repo if it is a private repo. for more information check (flux helm repositories examples)[https://fluxcd.io/docs/components/source/helmrepositories/#spec-examples]
+So ```infrastructure/sources/ingress-nginx-helm.yaml``` describes where the repo is located, you can add and reference secrets to the repo if it is a private repo. for more information check [flux helm repositories examples](https://fluxcd.io/docs/components/source/helmrepositories/#spec-examples)
 The file  ```infrastructure/sources/kustomization.yaml``` Describes to flux what sources should be included in the cluster.
 
 ### 7.2 Add ingress nginx components to be deployed
@@ -468,7 +468,7 @@ spec:
       port: 8443
 
 ```
-This contains several nginx configurations so it plays well with kind as for the local environment we want to use our localhost and local IP so the services are set to "NodePort" on a external cluster this would be "LoadBalancer". for more details on nginx configuartions check the (helm chart documentation)[https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx#configuration]
+This contains several nginx configurations so it plays well with kind as for the local environment we want to use our localhost and local IP so the services are set to "NodePort" on a external cluster this would be "LoadBalancer". for more details on nginx configuartions check the [helm chart documentation](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx#configuration)
 
 ### 7.4 Confirm all is running
 
