@@ -14,7 +14,7 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 - ```kubectl```
 
 ## Contents
-- 0 - Clone this repo
+- [](0 - Clone this repo
 - 1 - Kubernetes cluster
   - 1.1 - Existing cluster
   - 1.2 - Setup local cluster with Kind
@@ -23,6 +23,11 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 - 4 - bootstrap flux on your system
 - 5 - Check all is running correctly
 - 6 - review the file structure and how to organize your clusters
+- 7 - Infrastructure example install ingress-nginx
+    - 7.1 - Add a source
+    - 7.2 - Add ingress nginx components to be deployed
+    - 7.3 - Add the specific configurations for your cluster
+    - 7.4 - Confirm all is running
 
 
 ## 0 - Clone this repo
@@ -40,7 +45,7 @@ If you have a local cluster already just change your context to that cluster and
 
 ### 1.2 - Setup local cluster with Kind
 
-Follow the steps on (Kind)[https://kind.sigs.k8s.io/docs/user/quick-start/] to install Kind in your system.
+Follow the steps on (https://kind.sigs.k8s.io/docs/user/quick-start/)[kind] to install Kind in your system.
 
 After the kind cli is installed just spin your new cluster:
 ```
@@ -85,7 +90,7 @@ This conflig will generate a cluster with 1 control-plane and 2 workes you can a
 
 ## 2 - Install flux CLI
 
-In order to sync a repo you will need to install the (flux cli)[https://fluxcd.io/docs/installation/#install-the-flux-cli] follow the instructions to your system.
+In order to sync a repo you will need to install the [flux cli](https://fluxcd.io/docs/installation/#install-the-flux-cli) follow the instructions to your system.
 
 ## 3 - Export github credentials
 
