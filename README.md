@@ -15,19 +15,19 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 
 ## Contents
 - [0 - Clone this repo](#0-Clone-this-repo)
-- 1 - Kubernetes cluster
-  - 1.1 - Existing cluster
-  - 1.2 - Setup local cluster with Kind
-- 2 - Install flux CLI
-- 3 - Export github credentials
-- 4 - bootstrap flux on your system
-- 5 - Check all is running correctly
-- 6 - review the file structure and how to organize your clusters
-- 7 - Infrastructure example install ingress-nginx
-    - 7.1 - Add a source
-    - 7.2 - Add ingress nginx components to be deployed
-    - 7.3 - Add the specific configurations for your cluster
-    - 7.4 - Confirm all is running
+- [1 Kubernetes cluster](#1-Kubernetes-cluster)
+  - [1.1 Existing cluster](#1.1-Existing-cluster)
+  - [1.2 Setup local cluster with Kind](#1.2-Setup-local-cluster-with-Kind)
+- [2 Install flux CLI](#2-Install-flux-CLI)
+- [3 Export github credentials](#3-Export-github-credentials)
+- [4 bootstrap flux on your system](#4-bootstrap-flux-on-your-system)
+- [5 Check all is running correctly](#5-Check-all-is-running-correctly)
+- [6 review the file structure and how to organize your clusters](#6-review-the-file-structure-and-how-to-organize-your-clusters)
+- [7 Infrastructure example install ingress-nginx](#7-Infrastructure-example-install-ingress-nginx)
+    - [7.1 Add a source](#7.1-Add-a-source)
+    - [7.2 Add ingress nginx components to be deployed](#7.2-Add-ingress-nginx-components-to-be-deployed)
+    - [7.3 Add the specific configurations for your cluster](#7.3-Add-the-specific-configurations-for-your-cluster)
+    - [7.4 Confirm all is running](#7.4-Confirm-all-is-running)
 
 
 ## 0 Clone this repo
