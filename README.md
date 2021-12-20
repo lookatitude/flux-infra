@@ -104,9 +104,13 @@ flux bootstrap github \
   --private
 ```
 ```--repository=flux-infra``` name your repo (will be created if it does not exist and your token has permissions to create repos on your account).
+
 ```--branch=main``` branch you want to sync to your cluster
+
 ```--path=./clusters/local``` path in the repo were the flux config will sit.
+
 ```--personal``` personal github account 
+
 ```--private``` make the repo private (if you remove this the repo will be created as public)
 
 There are other options for this tool like linking it with an Enterprise Github account, or other git rpoviders check (flux bootstrap)[https://fluxcd.io/docs/installation/#bootstrap]
