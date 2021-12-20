@@ -16,9 +16,12 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 ## Contents
 - 0 - Clone this repo
 - 1 - Kubernetes cluster
-  - existing cluster
-  - local cluster
-- 2 - install flux cli
+  - 1.1 - Existing cluster
+  - 1.2 - Setup local cluster with Kind
+- 2 - Install flux CLI
+- 3 - Export github credentials
+- 4 - bootstrap flux on your system
+- 5 - Check all is running correctly 
 
 
 ## 0 - Clone this repo
@@ -34,7 +37,7 @@ In order to follow this manual you'll need to setup a local kuberntes cluster.
 
 If you have a local cluster already just change your context to that cluster and move to step 2
 
-### 1.2 Setup local cluster with Kind
+### 1.2 - Setup local cluster with Kind
 
 Follow the steps on (Kind)[https://kind.sigs.k8s.io/docs/user/quick-start/] to install Kind in your system.
 
@@ -130,7 +133,7 @@ pull the changes and merge them with your current repo.
 
 Merge the repo and the file structure, commit it to your repo and push your changes.
 
-## 5 Check all is running correctly
+## 5 - Check all is running correctly
 
 #### Check flux is ok
 ```flux check```this command will perform a check on all flux components runing on the cluster.
@@ -162,3 +165,45 @@ flux-system	kustomization/apps          	True 	Applied revision: main/f0f510041d
 flux-system	kustomization/flux-system   	True 	Applied revision: main/f0f510041d7678da25630983571a8762ac13a6ac	main/f0f510041d7678da25630983571a8762ac13a6ac	False
 flux-system	kustomization/infrastructure	True 	Applied revision: main/f0f510041d7678da25630983571a8762ac13a6ac	main/f0f510041d7678da25630983571a8762ac13a6ac	False
 ```
+
+
+## 6 - review the file structure and how to organize your clusters
+
+Your folder structure should look something like this:
+```bash
+├── README.md
+├── apps
+│   ├── base
+│   └── local
+│       └── kustomization..yaml
+├── clusters
+│   └── local
+│       ├── apps.yaml
+│       ├── flux-system
+│       │   ├── gotk-components.yaml
+│       │   ├── gotk-sync.yaml
+│       │   └── kustomization.yaml
+│       └── infrastructure.yaml
+├── infrastructure
+│   ├── common
+│   ├── local
+│   │   └── kustomization..yaml
+│   └── sources
+│       └── kustomization..yaml
+├── kind.yaml
+└── notes.txt
+```
+
+#### cluster
+For every cluster you add you can create a new folder inside the clusters folder and add the specific configs for that cluster. 
+Inside each cluster folder there is a flux-system folder created and updated by the flux bootstrap command, and 2 yaml files ```apps.yaml``` and ```ìnfrastructure.yaml``` this files point to where the infrastructure code and your apps code resides. 
+
+#### Infrastructure
+The infrastructure folder should define the softwares you want to run on your clusters. you will have 3 main folders, ```sources```, ```common``` and ```local```or the name of your cluster.
+The common folder should have all the software you want to run on every cluster in a generic form, example an ingress controller deploy, the specific configs for the local environment can be added on the local folder.
+The sources folder will hold the repos where your software resides, a helm registry info, or a git repository, 
+
+#### apps
+This folder contains the base folder were you add the base deploy of your apps. Add the specific configs for an environment inside that environment folder (cluster name) in this case local.
+
+
