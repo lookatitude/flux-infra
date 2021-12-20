@@ -14,7 +14,7 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 - ```kubectl```
 
 ## Contents
-- [0 - Clone this repo](0 - Clone this repo
+- [0 - Clone this repo](0 - Clone this repo)
 - 1 - Kubernetes cluster
   - 1.1 - Existing cluster
   - 1.2 - Setup local cluster with Kind
