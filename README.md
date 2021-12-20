@@ -14,7 +14,7 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 - ```kubectl```
 
 ## Contents
-- [](0 - Clone this repo
+- [0 - Clone this repo](0 - Clone this repo
 - 1 - Kubernetes cluster
   - 1.1 - Existing cluster
   - 1.2 - Setup local cluster with Kind
@@ -45,7 +45,7 @@ If you have a local cluster already just change your context to that cluster and
 
 ### 1.2 - Setup local cluster with Kind
 
-Follow the steps on (https://kind.sigs.k8s.io/docs/user/quick-start/)[kind] to install Kind in your system.
+Follow the steps on [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) to install Kind in your system.
 
 After the kind cli is installed just spin your new cluster:
 ```
