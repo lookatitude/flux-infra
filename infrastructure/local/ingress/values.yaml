@@ -6,10 +6,26 @@ spec:
   releaseName: nginx-ingress-controller
   values:
     controller:
-      # Configures the ports the nginx-controller listens on
-      containerPort:
-        http: 80
-        https: 443
+      updateStrategy:
+        type: "RollingUpdate"
+        rollingUpdate:
+          maxUnavailable: 1
+      hostPort:
+        enabled: true
+      terminationGracePeriodSeconds: 0
+      service:
+        type: "NodePort"
+      watchingIngressWithoutClass: true
+      nodeSelector:
+        ingress-ready: "true"
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Equal"
+          effect: "NoSchedule"
+      publishService:
+        enabled: false
+      extraArgs:
+        publish-status-address: "localhost"
     metrics:
       enabled: true
       port: 10254
