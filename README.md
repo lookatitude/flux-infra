@@ -130,3 +130,35 @@ pull the changes and merge them with your current repo.
 
 Merge the repo and the file structure, commit it to your repo and push your changes.
 
+## 5 Check all is running correctly
+
+#### Check flux is ok
+```flux check```this command will perform a check on all flux components runing on the cluster.
+
+```bash
+➜ flux check
+► checking prerequisites
+✔ Kubernetes 1.21.1 >=1.19.0-0
+► checking controllers
+✔ helm-controller: deployment ready
+► ghcr.io/fluxcd/helm-controller:v0.14.1
+✔ kustomize-controller: deployment ready
+► ghcr.io/fluxcd/kustomize-controller:v0.18.2
+✔ notification-controller: deployment ready
+► ghcr.io/fluxcd/notification-controller:v0.19.0
+✔ source-controller: deployment ready
+► ghcr.io/fluxcd/source-controller:v0.19.2
+✔ all checks passed
+```
+
+```flux get all -A```this command will check all your flux components and their current state.
+
+```bash
+NAMESPACE  	NAME                     	READY	MESSAGE                                                        	REVISION                                     	SUSPENDED
+flux-system	gitrepository/flux-system	True 	Fetched revision: main/f0f510041d7678da25630983571a8762ac13a6ac	main/f0f510041d7678da25630983571a8762ac13a6ac	False
+
+NAMESPACE  	NAME                        	READY	MESSAGE                                                        	REVISION                                     	SUSPENDED
+flux-system	kustomization/apps          	True 	Applied revision: main/f0f510041d7678da25630983571a8762ac13a6ac	main/f0f510041d7678da25630983571a8762ac13a6ac	False
+flux-system	kustomization/flux-system   	True 	Applied revision: main/f0f510041d7678da25630983571a8762ac13a6ac	main/f0f510041d7678da25630983571a8762ac13a6ac	False
+flux-system	kustomization/infrastructure	True 	Applied revision: main/f0f510041d7678da25630983571a8762ac13a6ac	main/f0f510041d7678da25630983571a8762ac13a6ac	False
+```
