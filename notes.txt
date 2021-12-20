@@ -3,3 +3,11 @@ token: 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
 
 export GITHUB_TOKEN=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
 export GITHUB_USER=lookatitude
+
+flux bootstrap github \
+  --owner=$GITHUB_USER \
+  --repository=flux-infra \
+  --branch=main \
+  --path=./clusters/local \
+  --personal \
+  --private
