@@ -412,16 +412,6 @@ kind: Kustomization
 namespace: ingress-nginx
 resources:
   - ../../common/ingress-nginx
-```
-In this case we are just getting the defaults from our common folder and we do not want to change anything at this point but as an example we can add a file for our values and use it to overide the defaults.
-
-Change the file ``` infrastructure/local/ingress/kustomization.yaml``` and add the following content:
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namespace: ingress-nginx
-resources:
-  - ../../common/ingress-nginx
 patchesStrategicMerge:
  - values.yaml
 ```
@@ -436,10 +426,26 @@ spec:
   releaseName: nginx-ingress-controller
   values:
     controller:
-      # Configures the ports the nginx-controller listens on
-      containerPort:
-        http: 80
-        https: 443
+      updateStrategy:
+        type: "RollingUpdate"
+        rollingUpdate:
+          maxUnavailable: 1
+      hostPort:
+        enabled: true
+      terminationGracePeriodSeconds: 0
+      service:
+        type: "NodePort"
+      watchingIngressWithoutClass: true
+      nodeSelector:
+        ingress-ready: "true"
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Equal"
+          effect: "NoSchedule"
+      publishService:
+        enabled: false
+      extraArgs:
+        publish-status-address: "localhost"
     metrics:
       enabled: true
       port: 10254
@@ -456,4 +462,44 @@ spec:
       # timeoutSeconds: 10
       port: 8443
 
+```
+This contains several nginx configurations so it plays well with kind as for the local environment we want to use our localhost and local IP so the services are set to "NodePort" on a external cluster this would be "LoadBalancer". for more details on nginx configuartions check the (helm chart documentation)[https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx#configuration]
+
+### 7.4 - Confirm all is running
+
+to check how is the state of you flux deployments use the command ```flux get all -A``` basically saying give me all flux resources in all namespaces ```-A```. You should see a result like this:
+```bash
+NAMESPACE  	NAME                     	READY	MESSAGE                                                        	REVISION                                     	SUSPENDED
+flux-system	gitrepository/flux-system	True 	Fetched revision: main/59fb83bf0246c1fe6f42f747819404bd49c33a76	main/59fb83bf0246c1fe6f42f747819404bd49c33a76	False
+
+NAMESPACE  	NAME                        	READY	MESSAGE                                                                           	REVISION                                                        	SUSPENDED
+flux-system	helmrepository/ingress-nginx	True 	Fetched revision: b67e10d002be11c3bd121f8f5fe2d1d50213460f70fc708c11247cd995a818d6	b67e10d002be11c3bd121f8f5fe2d1d50213460f70fc708c11247cd995a818d6	False
+
+NAMESPACE  	NAME                                 	READY	MESSAGE                                           	REVISION	SUSPENDED
+flux-system	helmchart/ingress-nginx-nginx-ingress	True 	Pulled 'ingress-nginx' chart with version '4.0.9'.	4.0.9   	False
+
+NAMESPACE    	NAME                     	READY	MESSAGE                         	REVISION	SUSPENDED
+ingress-nginx	helmrelease/nginx-ingress	True 	Release reconciliation succeeded	4.0.9   	False
+
+NAMESPACE  	NAME                        	READY	MESSAGE                                                        	REVISION                                     	SUSPENDED
+flux-system	kustomization/apps          	True 	Applied revision: main/59fb83bf0246c1fe6f42f747819404bd49c33a76	main/59fb83bf0246c1fe6f42f747819404bd49c33a76	False
+flux-system	kustomization/flux-system   	True 	Applied revision: main/59fb83bf0246c1fe6f42f747819404bd49c33a76	main/59fb83bf0246c1fe6f42f747819404bd49c33a76	False
+flux-system	kustomization/infrastructure	True 	Applied revision: main/59fb83bf0246c1fe6f42f747819404bd49c33a76	main/59fb83bf0246c1fe6f42f747819404bd49c33a76	False
+```
+
+You cal also check using ```kubectl get all -n ingress-nginx``` and you should see something similar to:
+```bash
+NAME                                                                  READY   STATUS    RESTARTS   AGE
+pod/nginx-ingress-controller-ingress-nginx-controller-bcfb9d64jz4fq   1/1     Running   0          13m
+
+NAME                                                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+service/nginx-ingress-controller-ingress-nginx-controller             NodePort    10.96.117.141   <none>        80:31744/TCP,443:30982/TCP   59m
+service/nginx-ingress-controller-ingress-nginx-controller-admission   ClusterIP   10.96.126.41    <none>        443/TCP                      59m
+
+NAME                                                                READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nginx-ingress-controller-ingress-nginx-controller   1/1     1            1           59m
+
+NAME                                                                           DESIRED   CURRENT   READY   AGE
+replicaset.apps/nginx-ingress-controller-ingress-nginx-controller-8477cccf69   0         0         0       59m
+replicaset.apps/nginx-ingress-controller-ingress-nginx-controller-bcfb9d64     1         1         1       13m
 ```
