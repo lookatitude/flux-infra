@@ -14,7 +14,7 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 - ```kubectl```
 
 ## Contents
-- [0 - Clone this repo](#0 - Clone this repo)
+- [0 - Clone this repo](#0-Clone-this-repo)
 - 1 - Kubernetes cluster
   - 1.1 - Existing cluster
   - 1.2 - Setup local cluster with Kind
@@ -30,20 +30,20 @@ This is an opinionated aproach there are many alternatives to what we are doing 
     - 7.4 - Confirm all is running
 
 
-## 0 - Clone this repo
+## 0 Clone this repo
 
 Clone thsi repo with ```git clone https://github.com/lookatitude/flux-infra.git```.
 Navigate to the ```flux-infra``` directory.
 
-## 1 - Kubernetes Cluster
+## 1 Kubernetes Cluster
 
 In order to follow this manual you'll need to setup a local kuberntes cluster.
 
-### 1.1 - Existing cluster
+### 1.1 Existing cluster
 
 If you have a local cluster already just change your context to that cluster and move to step 2
 
-### 1.2 - Setup local cluster with Kind
+### 1.2 Setup local cluster with Kind
 
 Follow the steps on [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) to install Kind in your system.
 
@@ -88,11 +88,11 @@ nodes:
 ```
 This conflig will generate a cluster with 1 control-plane and 2 workes you can adjust this file to your preference in order to fit your needs.
 
-## 2 - Install flux CLI
+## 2 Install flux CLI
 
 In order to sync a repo you will need to install the [flux cli](https://fluxcd.io/docs/installation/#install-the-flux-cli) follow the instructions to your system.
 
-## 3 - Export github credentials
+## 3 Export github credentials
 
 The flux tool will use your credentials to create a repo in case it does not exist and connect to that repo to add the flux system configuration and syncronise your cluster configuration.
 ```
@@ -102,7 +102,7 @@ export GITHUB_REPO=<your repo name> # ex: flux-infra
 ```
 Get your token from github personal tokens area under settings -> developer settings -> personal access tokens
 
-## 4 - bootstrap flux on your system
+## 4 bootstrap flux on your system
 
 ```
 flux bootstrap github \
@@ -139,7 +139,7 @@ pull the changes and merge them with your current repo.
 
 Merge the repo and the file structure, commit it to your repo and push your changes.
 
-## 5 - Check all is running correctly
+## 5 Check all is running correctly
 
 #### Check flux is ok
 ```flux check```this command will perform a check on all flux components runing on the cluster.
@@ -173,7 +173,7 @@ flux-system	kustomization/infrastructure	True 	Applied revision: main/f0f510041d
 ```
 
 
-## 6 - review the file structure and how to organize your clusters
+## 6 review the file structure and how to organize your clusters
 
 Your folder structure should look something like this:
 ```bash
@@ -213,11 +213,11 @@ The sources folder will hold the repos where your software resides, a helm regis
 This folder contains the ```base``` folder were you add the base deploy of your apps. Add the specific configs for an environment inside that environment folder (cluster name) in this case ```local```.
 
 
-## 7 - Infrastructure example install ingress-nginx
+## 7 Infrastructure example install ingress-nginx
 
 In this example we will install ingress nginx to test and understand our folder organization.
 
-### 7.1 - Add a source
+### 7.1 Add a source
 Adding the source repository where flux should grab the ingress-nginx helm chart open ```infrastructure/sources/kustomization.yaml``` and add the following content:
 ```bash 
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -243,7 +243,7 @@ note: As a convention and since the sources folder can hold several types of rep
 So ```infrastructure/sources/ingress-nginx-helm.yaml``` describes where the repo is located, you can add and reference secrets to the repo if it is a private repo. for more information check (flux helm repositories examples)[https://fluxcd.io/docs/components/source/helmrepositories/#spec-examples]
 The file  ```infrastructure/sources/kustomization.yaml``` Describes to flux what sources should be included in the cluster.
 
-### 7.2 - Add ingress nginx components to be deployed
+### 7.2 Add ingress nginx components to be deployed
 
 create a folder ```infrastructure/common/ingress-nginx``` this will hold the default for your ingress nginx deployment instructions.
 
@@ -394,7 +394,7 @@ resources:
   - release.yaml
 ```
 
-### 7.3 - Add the specific configurations for your cluster
+### 7.3 Add the specific configurations for your cluster
 Now that we added the source for the helm chart and the default values for releasing an ingress-nginx we will use that base and add the modifications we need to our specific cluster, this is where you change the values for example to run on your local or production cluster.
 
 Create a folder ``` infrastructure/local/ingress```
@@ -470,7 +470,7 @@ spec:
 ```
 This contains several nginx configurations so it plays well with kind as for the local environment we want to use our localhost and local IP so the services are set to "NodePort" on a external cluster this would be "LoadBalancer". for more details on nginx configuartions check the (helm chart documentation)[https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx#configuration]
 
-### 7.4 - Confirm all is running
+### 7.4 Confirm all is running
 
 to check how is the state of you flux deployments use the command ```flux get all -A``` basically saying give me all flux resources in all namespaces ```-A```. You should see a result like this:
 ```bash
