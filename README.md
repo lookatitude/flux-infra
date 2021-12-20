@@ -118,11 +118,14 @@ flux bootstrap github \
 There are other options for this tool like linking it with an Enterprise Github account, or other git rpoviders check (flux bootstrap)[https://fluxcd.io/docs/installation/#bootstrap]
 
 Remove the reference to the currect repo and connect it to yours:
+
 ```git remote rm origin``` to remove the current remote reference
 
 ```git remote add origin git@github.com:$GITHUB_USER/GITHUB_REPO.git``` to remove the current remote reference
 
+
 pull the changes and merge them with your current repo.
+
 ```git pull origin main``` get the config for your local repo.
 
 Merge the repo and the file structure, commit it to your repo and push your changes.
