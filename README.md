@@ -89,6 +89,7 @@ The flux tool will use your credentials to create a repo in case it does not exi
 ```
 export GITHUB_TOKEN=<your token>
 export GITHUB_USER=<your username>
+export GITHUB_REPO=<your repo name> # ex: flux-infra
 ```
 Get your token from github personal tokens area under settings -> developer settings -> personal access tokens
 
@@ -97,7 +98,7 @@ Get your token from github personal tokens area under settings -> developer sett
 ```
 flux bootstrap github \
   --owner=$GITHUB_USER \
-  --repository=flux-infra \
+  --repository=$GITHUB_REPO \
   --branch=main \
   --path=./clusters/local \
   --personal \
@@ -113,4 +114,16 @@ flux bootstrap github \
 
 ```--private``` make the repo private (if you remove this the repo will be created as public)
 
+
 There are other options for this tool like linking it with an Enterprise Github account, or other git rpoviders check (flux bootstrap)[https://fluxcd.io/docs/installation/#bootstrap]
+
+Remove the reference to the currect repo and connect it to yours:
+```git remote rm origin``` to remove the current remote reference
+
+```git remote add origin git@github.com:$GITHUB_USER/GITHUB_REPO.git``` to remove the current remote reference
+
+pull the changes and merge them with your current repo.
+```git pull origin main``` get the config for your local repo.
+
+Merge the repo and the file structure, commit it to your repo and push your changes.
+
