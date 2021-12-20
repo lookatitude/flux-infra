@@ -471,8 +471,10 @@ spec:
 This contains several nginx configurations so it plays well with kind as for the local environment we want to use our localhost and local IP so the services are set to "NodePort" on a external cluster this would be "LoadBalancer". for more details on nginx configuartions check the [helm chart documentation](https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx#configuration)
 
 ### 7.4 Confirm all is running
+In order to reflect changes in your cluster you will need to commit and push your code to your repo.
+After that you need flux to reconcile your infrastructure code to your cluster, you can either wait for the sync to happen or you can manually trigger a sync with the main repository by executing the following command ```flux reconcile source git flux-system --verbose``` this will sync the commits with the version flux has if different flux will update its copy and check for changes to apply in your cluster. 
 
-to check how is the state of you flux deployments use the command ```flux get all -A``` basically saying give me all flux resources in all namespaces ```-A```. You should see a result like this:
+To check how is the state of you flux deployments use the command ```flux get all -A``` basically saying give me all flux resources in all namespaces ```-A```. You should see a result like this:
 ```bash
 NAMESPACE  	NAME                     	READY	MESSAGE                                                        	REVISION                                     	SUSPENDED
 flux-system	gitrepository/flux-system	True 	Fetched revision: main/59fb83bf0246c1fe6f42f747819404bd49c33a76	main/59fb83bf0246c1fe6f42f747819404bd49c33a76	False

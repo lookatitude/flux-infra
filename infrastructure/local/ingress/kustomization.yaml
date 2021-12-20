@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: ingress-nginx
 resources:
   - ../../common/ingress-nginx
+  - ../../common/monitoring
 patchesStrategicMerge:
  - values.yaml
  
