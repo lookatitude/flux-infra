@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+data:
+  disable-access-log: "true"
+  ssl-protocols: "TLSv1.2 TLSv1.3"
+  server-tokens: "false"

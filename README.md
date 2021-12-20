@@ -21,7 +21,8 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 - 2 - Install flux CLI
 - 3 - Export github credentials
 - 4 - bootstrap flux on your system
-- 5 - Check all is running correctly 
+- 5 - Check all is running correctly
+- 6 - review the file structure and how to organize your clusters
 
 
 ## 0 - Clone this repo
@@ -204,6 +205,255 @@ The common folder should have all the software you want to run on every cluster 
 The sources folder will hold the repos where your software resides, a helm registry info, or a git repository, 
 
 #### apps
-This folder contains the base folder were you add the base deploy of your apps. Add the specific configs for an environment inside that environment folder (cluster name) in this case local.
+This folder contains the ```base``` folder were you add the base deploy of your apps. Add the specific configs for an environment inside that environment folder (cluster name) in this case ```local```.
 
 
+## 7 - Infrastructure example install ingress-nginx
+
+In this example we will install ingress nginx to test and understand our folder organization.
+
+### 7.1 - Add a source
+Adding the source repository where flux should grab the ingress-nginx helm chart open ```infrastructure/sources/kustomization.yaml``` and add the following content:
+```bash 
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: flux-system
+resources:
+  - ingress-nginx-helm.yml
+```
+
+Now add the ingress-nginx repo file ```infrastructure/sources/ingress-nginx-helm.yaml``` and add the following content:
+```bash
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: ingress-nginx
+spec:
+  interval: 1h
+  url: https://kubernetes.github.io/ingress-nginx
+```
+
+note: As a convention and since the sources folder can hold several types of repositories and/or registries I personally add the type of source to the file name, in this case ```-helm```  to represent a helm repo.
+
+So ```infrastructure/sources/ingress-nginx-helm.yaml``` describes where the repo is located, you can add and reference secrets to the repo if it is a private repo. for more information check (flux helm repositories examples)[https://fluxcd.io/docs/components/source/helmrepositories/#spec-examples]
+The file  ```infrastructure/sources/kustomization.yaml``` Describes to flux what sources should be included in the cluster.
+
+### 7.2 - Add ingress nginx components to be deployed
+
+create a folder ```infrastructure/common/ingress-nginx``` this will hold the default for your ingress nginx deployment instructions.
+
+#### namespace
+Lets create a namespace to run our ingress in its own namespace, create a file in ```infrastructure/common/ingress-nginx/namespace.yaml``` and add the following content:
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-nginx
+```
+This is just a simple namespace manifest from kubernetes.
+
+#### Add a configmap 
+Use this config map for the base settings of your ingress create a file in  ```infrastructure/common/ingress-nginx/configmap.yaml``` and add the following content:
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+data:
+  disable-access-log: "true"
+  ssl-protocols: "TLSv1.2 TLSv1.3"
+  server-tokens: "false"
+```
+
+#### Add a Helm release 
+The helm release file describes how you want to install update and release your application. 
+create a release file in ```infrastructure/```and add the following content:
+```yaml
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nginx-ingress
+spec:
+  releaseName: nginx-ingress-controller
+  interval: 1h0m0s
+  chart:
+    spec:
+      chart: ingress-nginx
+      sourceRef:
+        kind: HelmRepository
+        name: ingress-nginx
+        namespace: flux-system
+      version: "4.0.9"
+  install:
+    remediation:
+      retries: 3
+  values:
+    controller:
+      # Configures the controller container name
+      containerName: controller
+      # Configures the ports the nginx-controller listens on
+      containerPort:
+        http: 80
+        https: 443
+    kind: Deployment
+    metrics:
+      enabled: true
+      port: 10254
+    
+    labels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx
+      app.kubernetes.io/component: controller
+
+    admissionWebhooks:
+      annotations: {}
+      enabled: true
+      failurePolicy: Fail
+      # timeoutSeconds: 10
+      port: 8443
+
+```
+
+Now lets look at this file with more detail
+```yaml
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nginx-ingress
+spec:
+  releaseName: nginx-ingress-controller
+  interval: 1h0m0s
+```
+This section defines our helm release and give it a name, and settinga a release name we also telm how often we want to check this helm release for new versions in this case once evry hour.
+
+The chart configuration 
+```yaml
+  chart:
+    spec:
+      chart: ingress-nginx
+      sourceRef:
+        kind: HelmRepository
+        name: ingress-nginx
+        namespace: flux-system
+      version: "4.0.9"
+```
+here we define the chart we want to use, reference your source (we created this source in the previous step) the sourceRef.name value should be the exact same you called your source on the previous step. We are also defining the version (use semver rules here) in this case we are pointing to a specific version but you can set renges like ```4.x``` and it will grab the latest version starting with 4. in our case we want this specific version "4.0.9" so we have control over what exact version of the helm chart we have intalled.
+
+Installation instructions
+```yaml
+  install:
+    remediation:
+      retries: 3
+```
+What happens if the installation fails? it will try again for a maximum of 3 times other wise it fails the installation.
+
+The values
+```yaml
+  values:
+    controller:
+      # Configures the controller container name
+      containerName: controller
+      # Configures the ports the nginx-controller listens on
+      containerPort:
+        http: 80
+        https: 443
+    kind: Deployment
+    metrics:
+      enabled: true
+      port: 10254
+    
+    labels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx
+      app.kubernetes.io/component: controller
+
+    admissionWebhooks:
+      annotations: {}
+      enabled: true
+      failurePolicy: Fail
+      # timeoutSeconds: 10
+      port: 8443
+```
+In this case we want to pass our helm chart this values, in case you are dealing with a different chart refer to the values file of your chart to know what values you can add to the values section.
+
+#### Let Kustomize know what files to use
+Lets tell kustomize what files we want to run and in what order.
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingress-nginx
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - release.yaml
+```
+
+### 7.3 - Add the specific configurations for your cluster
+Now that we added the source for the helm chart and the default values for releasing an ingress-nginx we will use that base and add the modifications we need to our specific cluster, this is where you change the values for example to run on your local or production cluster.
+
+Create a folder ``` infrastructure/local/ingress```
+Create a file for your kustomizations ``` infrastructure/local/kustomization.yaml``` and add the following content:
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../sources
+  - ingress
+```
+So we are telling it to include 1st all the sources and then the contents in the ingress folder.
+
+#### the ingress 
+
+Create a file for your kustomizations ``` infrastructure/local/ingress/kustomization.yaml``` and add the following content:
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingress-nginx
+resources:
+  - ../../common/ingress-nginx
+```
+In this case we are just getting the defaults from our common folder and we do not want to change anything at this point but as an example we can add a file for our values and use it to overide the defaults.
+
+Change the file ``` infrastructure/local/ingress/kustomization.yaml``` and add the following content:
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingress-nginx
+resources:
+  - ../../common/ingress-nginx
+patchesStrategicMerge:
+ - values.yaml
+```
+
+create a file for your values ``` infrastructure/local/ingress/values.yaml``` and add the following content:
+```yaml
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nginx-ingress
+spec:
+  releaseName: nginx-ingress-controller
+  values:
+    controller:
+      # Configures the ports the nginx-controller listens on
+      containerPort:
+        http: 80
+        https: 443
+    metrics:
+      enabled: true
+      port: 10254
+    
+    labels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx
+      app.kubernetes.io/component: controller
+
+    admissionWebhooks:
+      annotations: {}
+      enabled: true
+      failurePolicy: Fail
+      # timeoutSeconds: 10
+      port: 8443
+
+```
