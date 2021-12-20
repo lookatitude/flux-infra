@@ -4,4 +4,4 @@ metadata:
   name: local-cluster
 resources:
   - ../sources
-  - ingress
+  #- ingress
