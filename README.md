@@ -11,7 +11,7 @@ This is an opinionated aproach there are many alternatives to what we are doing 
     - Docker running in your machine
     - Kind so you can spin up a multi-node cluster based on containers 
 - CLI for flux v2
-- ´´´kubectl´´´ 
+- ```kubectl```
 
 ## Contents
 - 0 - Clone this repo
@@ -23,8 +23,8 @@ This is an opinionated aproach there are many alternatives to what we are doing 
 
 ## 0 - Clone this repo
 
-Clone thsi repo with ´´´ git clone https://github.com/lookatitude/flux-infra.git ´´´.
-Navigate to the ´´´flux-infra´´´ directory.
+Clone thsi repo with ```git clone https://github.com/lookatitude/flux-infra.git```.
+Navigate to the ```flux-infra``` directory.
 
 ## 1 - Kubernetes Cluster
 
@@ -39,12 +39,12 @@ If you have a local cluster already just change your context to that cluster and
 Follow the steps on (Kind)[https://kind.sigs.k8s.io/docs/user/quick-start/] to install Kind in your system.
 
 After the kind cli is installed just spin your new cluster:
-´´´
+```
 kind create cluster --name kind --config=kind.yaml
-´´´
-This will use the configuration on the ´´´kind.yaml´´´ file to spin up a new cluster.
+```
+This will use the configuration on the ```kind.yaml``` file to spin up a new cluster.
 kind:yaml
-´´´
+```
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
@@ -76,7 +76,7 @@ nodes:
     nodeRegistration:
       kubeletExtraArgs:
         node-labels: "ingress-ready=true"
-´´´
+```
 This conflig will generate a cluster with 1 control-plane and 2 workes you can adjust this file to your preference in order to fit your needs.
 
 ## 2 - Install flux CLI
@@ -86,15 +86,15 @@ In order to sync a repo you will need to install the (flux cli)[https://fluxcd.i
 ## 3 - Export github credentials
 
 The flux tool will use your credentials to create a repo in case it does not exist and connect to that repo to add the flux system configuration and syncronise your cluster configuration.
-´´´
+```
 export GITHUB_TOKEN=<your token>
 export GITHUB_USER=<your username>
-´´´
+```
 Get your token from github personal tokens area under settings -> developer settings -> personal access tokens
 
 ## 4 - bootstrap flux on your system
 
-´´´
+```
 flux bootstrap github \
   --owner=$GITHUB_USER \
   --repository=flux-infra \
@@ -102,11 +102,11 @@ flux bootstrap github \
   --path=./clusters/local \
   --personal \
   --private
-´´´
-´´´--repository=flux-infra´´´ name your repo (will be created if it does not exist and your token has permissions to create repos on your account).
-´´´--branch=main´´´ branch you want to sync to your cluster
-´´´--path=./clusters/local´´´ path in the repo were the flux config will sit.
-´´´--personal´´´ personal github account 
-´´´--private´´´ make the repo private (if you remove this the repo will be created as public)
+```
+```--repository=flux-infra``` name your repo (will be created if it does not exist and your token has permissions to create repos on your account).
+```--branch=main``` branch you want to sync to your cluster
+```--path=./clusters/local``` path in the repo were the flux config will sit.
+```--personal``` personal github account 
+```--private``` make the repo private (if you remove this the repo will be created as public)
 
 There are other options for this tool like linking it with an Enterprise Github account, or other git rpoviders check (flux bootstrap)[https://fluxcd.io/docs/installation/#bootstrap]
